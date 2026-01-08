@@ -1,0 +1,329 @@
+# WeMake Project - Claude Code Rules
+
+## 프로젝트 개요
+React Router v7 + React 19 + TypeScript + Tailwind CSS 4 + Shadcn UI 기반 풀스택 웹 애플리케이션
+
+## 기술 스택
+
+### 프레임워크 & 라이브러리
+- **React**: 19.2.3 (최신 버전)
+- **React Router**: 7.10.1 (Remix 마이그레이션 완료)
+- **TypeScript**: 5.9.2
+- **Tailwind CSS**: 4.1.18
+- **Shadcn UI + Radix UI**: 컴포넌트 시스템
+- **Lucide React**: 아이콘 시스템
+
+### 빌드 도구
+- **Vite**: 7.1.7
+- **Tailwind Vite Plugin**: 4.1.18
+
+## 핵심 원칙
+
+### 코드 스타일
+- 간결하고 기술적인 TypeScript 코드 작성
+- 함수형/선언형 프로그래밍 패턴 사용, 클래스 지양
+- 코드 중복보다 반복과 모듈화 우선
+- 보조 동사를 포함한 명확한 변수명 (isLoading, hasError 등)
+
+### 파일 구조
+```
+exported component
+↓
+subcomponents
+↓
+helper functions
+↓
+static content
+↓
+types
+```
+
+## 네이밍 컨벤션
+
+### 디렉토리
+- **소문자 + 대시** 사용: `components/auth-wizard`, `app/common/pages`
+
+### 컴포넌트
+- **Named exports** 선호
+- **파일명**: kebab-case (home-page.tsx)
+- **컴포넌트명**: PascalCase (HomePage)
+
+### 변수
+- **보조 동사 포함**: `isLoading`, `hasError`, `canSubmit`
+- **명확한 의도 표현**: `userProfile` (O), `data` (X)
+
+## TypeScript 사용 규칙
+
+### 타입 정의
+- **모든 코드에 TypeScript 사용 필수**
+- **Interfaces 우선**, types는 필요시에만
+- **Enums 금지** → Map 사용
+
+```typescript
+// ❌ 나쁜 예
+enum Status { Active, Inactive }
+
+// ✅ 좋은 예
+const STATUS = {
+  ACTIVE: 'active',
+  INACTIVE: 'inactive',
+} as const;
+```
+
+### 함수 컴포넌트
+```typescript
+// ✅ 항상 TypeScript 인터페이스와 함께 함수형 컴포넌트 사용
+interface UserCardProps {
+  name: string;
+  email: string;
+}
+
+function UserCard({ name, email }: UserCardProps) {
+  return <div>...</div>;
+}
+```
+
+## React Router v7 특화 규칙
+
+### 🔴 중요: Remix → React Router 마이그레이션 완료
+```typescript
+// ❌ 절대 사용 금지
+import { ... } from "@remix-run/...";
+import { useLoaderData, useActionData } from "react-router";
+
+// ✅ 올바른 임포트
+import { ... } from "react-router";
+```
+
+### 라우트 타입 시스템
+```typescript
+// ✅ 올바른 타입 임포트
+import type { Route } from "./+types/home-page";
+
+// ✅ 라우트 함수 시그니처
+export const loader = ({ request }: Route.LoaderArgs) => {
+  return { data: "plain object" }; // json() 함수 사용 불가
+};
+
+export const action = ({ request }: Route.ActionArgs) => {
+  return { success: true };
+};
+
+export const meta: Route.MetaFunction = () => {
+  return [
+    { title: "Page Title" },
+    { name: "description", content: "Description" },
+  ];
+};
+```
+
+### 컴포넌트 Props
+```typescript
+// ❌ 절대 사용 금지
+export default function Page() {
+  const data = useLoaderData(); // 존재하지 않음
+  const actionData = useActionData(); // 존재하지 않음
+}
+
+// ✅ 올바른 방법
+export default function Page({ loaderData, actionData }: Route.ComponentProps) {
+  const { message } = loaderData;
+  return <div>{message}</div>;
+}
+```
+
+### 데이터 반환 규칙
+```typescript
+// ✅ 기본: Plain Object 반환
+export function loader({ request }: Route.LoaderArgs) {
+  return { user: { name: "John" } };
+}
+
+// ✅ 상태 코드 필요시: data() 사용
+import { data } from "react-router";
+
+export function loader({ request }: Route.LoaderArgs) {
+  return data({ error: "Not found" }, { status: 404 });
+}
+
+// ❌ json() 함수는 더 이상 존재하지 않음
+```
+
+### 필수 Export 규칙
+```typescript
+// ✅ 새 페이지 생성 시 항상 세 가지 함수 export
+export const loader = ({ request }: Route.LoaderArgs) => { ... };
+export const action = ({ request }: Route.ActionArgs) => { ... };
+export const meta: Route.MetaFunction = () => [ ... ];
+
+export default function Page({ loaderData }: Route.ComponentProps) { ... }
+```
+
+## UI 컴포넌트 규칙
+
+### Shadcn UI + Radix UI
+```typescript
+// ❌ Radix UI에서 직접 임포트 금지
+import { Button } from "@radix-ui/react-button";
+
+// ✅ 항상 Shadcn UI에서 임포트
+import { Button } from "~/common/components/ui/button";
+```
+
+### Tailwind CSS
+- **유틸리티 클래스 우선 사용**
+- **cn() 함수로 조건부 클래스 병합**
+
+```typescript
+import { cn } from "~/lib/utils";
+
+<div className={cn(
+  "base-classes",
+  isActive && "active-classes",
+  variant === "primary" && "primary-classes"
+)} />
+```
+
+## 프로젝트 구조 규칙
+
+### 디렉토리 구조
+```
+app/
+├── common/
+│   ├── components/
+│   │   └── ui/          # Shadcn UI 컴포넌트
+│   └── pages/           # 페이지 컴포넌트
+├── lib/
+│   └── utils.ts         # 유틸리티 함수
+└── routes.ts            # 라우트 설정
+```
+
+### 임포트 별칭
+```typescript
+// ✅ ~ 별칭 사용
+import { Button } from "~/common/components/ui/button";
+import { cn } from "~/lib/utils";
+
+// ❌ 상대 경로 지양
+import { Button } from "../../../common/components/ui/button";
+```
+
+## 문법 및 포맷팅
+
+### 함수 선언
+```typescript
+// ✅ 순수 함수는 function 키워드 사용
+function calculateTotal(price: number, tax: number): number {
+  return price * (1 + tax);
+}
+
+// ✅ 컴포넌트는 function 또는 arrow function
+export default function HomePage({ loaderData }: Route.ComponentProps) { ... }
+```
+
+### 조건문
+```typescript
+// ✅ 간단한 조건문은 간결하게
+if (isError) return <ErrorPage />;
+
+// ❌ 불필요한 중괄호 지양
+if (isError) {
+  return <ErrorPage />;
+}
+```
+
+### JSX
+```typescript
+// ✅ 선언적 JSX 작성
+<Button
+  variant="primary"
+  size="lg"
+  disabled={isLoading}
+>
+  {isLoading ? "처리 중..." : "제출"}
+</Button>
+```
+
+## 커밋 메시지 규칙
+
+### 한국어 커밋 메시지 필수
+```bash
+# ✅ 좋은 예
+git commit -m "홈페이지 레이아웃 구조 개선
+
+- 반응형 그리드 시스템 적용
+- 모바일 네비게이션 개선
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+
+# ❌ 나쁜 예
+git commit -m "Implement blazingly fast homepage with awesome features"
+git commit -m "Fix bug"
+```
+
+### 형식
+```
+간결한 한국어 제목 (50자 이내)
+
+- 주요 변경사항 1
+- 주요 변경사항 2
+- 주요 변경사항 3
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
+```
+
+## 품질 기준
+
+### 타입 안전성
+- **any 타입 금지**
+- **모든 Props에 인터페이스 정의**
+- **제네릭 적극 활용**
+
+### 코드 구성
+- **한 파일당 하나의 책임**
+- **100줄 이상 함수는 분리 고려**
+- **순환 의존성 금지**
+
+### 성능
+- **불필요한 리렌더링 방지** (React.memo, useMemo, useCallback 적절히 사용)
+- **코드 스플리팅** 고려
+- **이미지 최적화**
+
+## 실행 명령어
+
+```bash
+# 개발 서버
+npm run dev
+
+# 타입 체크
+npm run typecheck
+
+# 빌드
+npm run build
+
+# 프로덕션 실행
+npm run start
+```
+
+## 참고사항
+
+### 응답 언어
+- **모든 응답은 한국어로 작성**
+- 기술 용어는 영문 그대로 사용 (예: React Router, TypeScript)
+- 코드 주석도 한국어 사용
+
+### Git 브랜치 전략
+- **main 브랜치 직접 작업 금지**
+- **feature/** 브랜치에서 작업
+- **의미있는 단위로 커밋**
+
+### 보안
+- **환경 변수는 .env 파일 사용**
+- **API 키 등 민감 정보는 절대 커밋 금지**
+- **사용자 입력은 항상 검증**
+
+---
+
+**마지막 업데이트**: 2026-01-08
+**프로젝트**: WeMake
+**Claude Code 전용 설정 파일**
