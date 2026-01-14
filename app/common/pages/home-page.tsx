@@ -1,45 +1,36 @@
-import type { Route } from "./+types/home-page";
-import { Button } from "~/common/components/ui/button";
+import type { MetaFunction } from 'react-router';
+import { ProductCard } from '~/features/products/components/product-card';
 
-export const meta: Route.MetaFunction = () => {
+export const meta: MetaFunction = () => {
   return [
-    { title: "Home | WeMake" },
-    { name: "description", content: "WeMake에 오신 것을 환영합니다" },
+    { title: 'Home | wemake' },
+    { name: 'description', content: 'Welcome to wemake' },
   ];
 };
 
-export const loader = ({ request }: Route.LoaderArgs) => {
-  return {
-    message: "WeMake에 오신 것을 환영합니다!",
-  };
-};
-
-export const action = ({ request }: Route.ActionArgs) => {
-  return {
-    success: true,
-  };
-};
-
-export default function HomePage({ loaderData }: Route.ComponentProps) {
-  const { message } = loaderData;
-
+export default function HomePage() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-background">
-      <div className="max-w-2xl mx-auto px-6 text-center">
-        <h1 className="text-5xl font-bold tracking-tight text-foreground mb-6">
-          {message}
-        </h1>
-        <p className="text-lg text-muted-foreground mb-8">
-          함께 만들어가는 창작의 공간, WeMake입니다.
-        </p>
-        <div className="flex gap-4 justify-center">
-          <Button size="lg">시작하기</Button>
-          <Button variant="outline" size="lg">
-            더 알아보기
-          </Button>
+    <div className="px-20">
+      <div className="grid grid-cols-3 gap-4">
+        <div>
+          <h2 className="text-5xl font-bold leading-tight tracking-tight">
+            Today's Products
+          </h2>
+          <p className="text-xl font-light text-foreground">
+            The best products made by our community today.
+          </p>
         </div>
+        {Array.from({ length: 10 }).map((_, index) => (
+          <ProductCard
+            id={`productId-${index}`}
+            name="Product Name"
+            description="Product Description"
+            commentsCount={12}
+            viewsCount={12}
+            votesCount={120}
+          />
+        ))}
       </div>
-    </main>
+    </div>
   );
 }
-
