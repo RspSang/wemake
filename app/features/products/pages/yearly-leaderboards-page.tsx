@@ -1,10 +1,9 @@
 import { DateTime } from 'luxon';
-import type { Route } from './+types/daily-leaderboards-page';
+import type { Route } from './+types/yearly-leaderboards-page';
 import { data, isRouteErrorResponse, Link } from 'react-router';
 import { ProductCard } from '../components/product-card';
 import {
-  dailyParamsSchema,
-  validateNotFutureDate,
+  yearlyParamsSchema,
   LEADERBOARD_ERRORS,
 } from '../schemas/leaderboard-params';
 import { Hero } from '~/common/components/hero';
@@ -12,22 +11,13 @@ import { Button } from '~/common/components/ui/button';
 import ProductPagination from '~/common/components/product-pagination';
 
 export function loader({ params }: Route.LoaderArgs) {
-  const { success, data: parsedData } = dailyParamsSchema.safeParse(params);
+  const { success, data: parsedData } = yearlyParamsSchema.safeParse(params);
   if (!success) {
     throw data(LEADERBOARD_ERRORS.INVALID_PARAMS, { status: 400 });
   }
 
-  const date = DateTime.fromObject({
-    year: parsedData.year,
-    month: parsedData.month,
-    day: parsedData.day,
-  });
-
-  if (!date.isValid) {
-    throw data(LEADERBOARD_ERRORS.INVALID_DATE, { status: 400 });
-  }
-
-  if (!validateNotFutureDate(date)) {
+  const today = DateTime.now();
+  if (parsedData.year > today.year) {
     throw data(LEADERBOARD_ERRORS.FUTURE_DATE, { status: 400 });
   }
 
@@ -43,11 +33,11 @@ export function action({ request }: Route.ActionArgs) {
 export const meta: Route.MetaFunction = ({ loaderData }) => {
   return [
     {
-      title: `Daily Leaderboard ${loaderData?.year}/${loaderData?.month}/${loaderData?.day} | wemake`,
+      title: `Yearly Leaderboard ${loaderData?.year} | wemake`,
     },
     {
       name: 'description',
-      content: `Product daily leaderboard for ${loaderData?.year}/${loaderData?.month}/${loaderData?.day}`,
+      content: `Product yearly leaderboard for ${loaderData?.year}`,
     },
   ];
 };
@@ -69,41 +59,30 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       </div>
     );
   }
-  return <div>unexpected error</div>;
+  return <div>Unexpected error</div>;
 }
 
-export default function DailyLeaderboardsPage({
+export default function YearlyLeaderboardsPage({
   loaderData,
 }: Route.ComponentProps) {
-  const urlDate = DateTime.fromObject({
-    year: loaderData.year,
-    month: loaderData.month,
-    day: loaderData.day,
-  });
-  const previousDay = urlDate.minus({ days: 1 });
-  const nextDay = urlDate.plus({ days: 1 });
-  const isToday = urlDate.equals(DateTime.now().startOf('day'));
+  const currentYear = DateTime.now().year;
+  const previousYear = loaderData.year - 1;
+  const nextYear = loaderData.year + 1;
+  const isCurrentYear = loaderData.year === currentYear;
+
   return (
     <div className="space-y-10">
-      <Hero
-        title={`The best products of ${urlDate.toLocaleString(
-          DateTime.DATE_MED
-        )}`}
-      />
+      <Hero title={`The best products of ${loaderData.year}`} />
       <div className="flex items-center justify-center gap-2">
         <Button variant="secondary" asChild>
-          <Link
-            to={`/products/leaderboards/daily/${previousDay.year}/${previousDay.month}/${previousDay.day}`}
-          >
-            &larr; {previousDay.toLocaleString(DateTime.DATE_SHORT)}
+          <Link to={`/products/leaderboards/yearly/${previousYear}`}>
+            &larr; {previousYear}
           </Link>
         </Button>
-        {!isToday && (
+        {!isCurrentYear && (
           <Button variant="secondary" asChild>
-            <Link
-              to={`/products/leaderboards/daily/${nextDay.year}/${nextDay.month}/${nextDay.day}`}
-            >
-              {nextDay.toLocaleString(DateTime.DATE_SHORT)} &rarr;
+            <Link to={`/products/leaderboards/yearly/${nextYear}`}>
+              {nextYear} &rarr;
             </Link>
           </Button>
         )}

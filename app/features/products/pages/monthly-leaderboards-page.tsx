@@ -1,9 +1,9 @@
 import { DateTime } from 'luxon';
-import type { Route } from './+types/daily-leaderboards-page';
+import type { Route } from './+types/monthly-leaderboards-page';
 import { data, isRouteErrorResponse, Link } from 'react-router';
 import { ProductCard } from '../components/product-card';
 import {
-  dailyParamsSchema,
+  monthlyParamsSchema,
   validateNotFutureDate,
   LEADERBOARD_ERRORS,
 } from '../schemas/leaderboard-params';
@@ -12,7 +12,7 @@ import { Button } from '~/common/components/ui/button';
 import ProductPagination from '~/common/components/product-pagination';
 
 export function loader({ params }: Route.LoaderArgs) {
-  const { success, data: parsedData } = dailyParamsSchema.safeParse(params);
+  const { success, data: parsedData } = monthlyParamsSchema.safeParse(params);
   if (!success) {
     throw data(LEADERBOARD_ERRORS.INVALID_PARAMS, { status: 400 });
   }
@@ -20,14 +20,13 @@ export function loader({ params }: Route.LoaderArgs) {
   const date = DateTime.fromObject({
     year: parsedData.year,
     month: parsedData.month,
-    day: parsedData.day,
   });
 
   if (!date.isValid) {
     throw data(LEADERBOARD_ERRORS.INVALID_DATE, { status: 400 });
   }
 
-  if (!validateNotFutureDate(date)) {
+  if (!validateNotFutureDate(date.endOf('month'))) {
     throw data(LEADERBOARD_ERRORS.FUTURE_DATE, { status: 400 });
   }
 
@@ -43,11 +42,11 @@ export function action({ request }: Route.ActionArgs) {
 export const meta: Route.MetaFunction = ({ loaderData }) => {
   return [
     {
-      title: `Daily Leaderboard ${loaderData?.year}/${loaderData?.month}/${loaderData?.day} | wemake`,
+      title: `Monthly Leaderboard ${loaderData?.year}/${loaderData?.month} | wemake`,
     },
     {
       name: 'description',
-      content: `Product daily leaderboard for ${loaderData?.year}/${loaderData?.month}/${loaderData?.day}`,
+      content: `Product monthly leaderboard for ${loaderData?.year}/${loaderData?.month}`,
     },
   ];
 };
@@ -69,41 +68,44 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       </div>
     );
   }
-  return <div>unexpected error</div>;
+  return <div>Unexpected error</div>;
 }
 
-export default function DailyLeaderboardsPage({
+export default function MonthlyLeaderboardsPage({
   loaderData,
 }: Route.ComponentProps) {
   const urlDate = DateTime.fromObject({
     year: loaderData.year,
     month: loaderData.month,
-    day: loaderData.day,
   });
-  const previousDay = urlDate.minus({ days: 1 });
-  const nextDay = urlDate.plus({ days: 1 });
-  const isToday = urlDate.equals(DateTime.now().startOf('day'));
+  const previousMonth = urlDate.minus({ months: 1 });
+  const nextMonth = urlDate.plus({ months: 1 });
+  const isCurrentMonth = urlDate.hasSame(DateTime.now(), 'month');
+
   return (
     <div className="space-y-10">
       <Hero
-        title={`The best products of ${urlDate.toLocaleString(
-          DateTime.DATE_MED
-        )}`}
+        title={`The best products of ${urlDate.toLocaleString({
+          month: 'long',
+          year: 'numeric',
+        })}`}
       />
       <div className="flex items-center justify-center gap-2">
         <Button variant="secondary" asChild>
           <Link
-            to={`/products/leaderboards/daily/${previousDay.year}/${previousDay.month}/${previousDay.day}`}
+            to={`/products/leaderboards/monthly/${previousMonth.year}/${previousMonth.month}`}
           >
-            &larr; {previousDay.toLocaleString(DateTime.DATE_SHORT)}
+            &larr;{' '}
+            {previousMonth.toLocaleString({ month: 'short', year: 'numeric' })}
           </Link>
         </Button>
-        {!isToday && (
+        {!isCurrentMonth && (
           <Button variant="secondary" asChild>
             <Link
-              to={`/products/leaderboards/daily/${nextDay.year}/${nextDay.month}/${nextDay.day}`}
+              to={`/products/leaderboards/monthly/${nextMonth.year}/${nextMonth.month}`}
             >
-              {nextDay.toLocaleString(DateTime.DATE_SHORT)} &rarr;
+              {nextMonth.toLocaleString({ month: 'short', year: 'numeric' })}{' '}
+              &rarr;
             </Link>
           </Button>
         )}

@@ -57,7 +57,7 @@ export const yearlyParamsSchema = z.object({
 
 // 날짜가 미래인지 검증하는 헬퍼 함수
 export function validateNotFutureDate(date: DateTime): boolean {
-  const today = DateTime.now().setZone('Asia/Seoul').startOf('day');
+  const today = DateTime.now().startOf('day');
   return date <= today;
 }
 
@@ -65,5 +65,8 @@ export function validateNotFutureDate(date: DateTime): boolean {
 export const LEADERBOARD_ERRORS = {
   INVALID_PARAMS: { error_code: 'invalid_params', message: 'Invalid params' },
   INVALID_DATE: { error_code: 'invalid_date', message: 'Invalid date' },
-  FUTURE_DATE: { error_code: 'future_date', message: 'Future date not allowed' },
+  FUTURE_DATE: {
+    error_code: 'future_date',
+    message: 'Future date not allowed',
+  },
 } as const;
