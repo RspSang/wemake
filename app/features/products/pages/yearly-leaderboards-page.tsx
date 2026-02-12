@@ -38,14 +38,15 @@ export function action({ request }: Route.ActionArgs) {
   return {};
 }
 
-export const meta: Route.MetaFunction = ({ loaderData }) => {
+export const meta: Route.MetaFunction = ({ params }) => {
+  const date = DateTime.fromObject({
+    year: Number(params.year),
+  })
+    .setZone('Asia/Seoul')
+    .setLocale('ko-KR');
   return [
     {
-      title: `Yearly Leaderboard ${loaderData?.year} | wemake`,
-    },
-    {
-      name: 'description',
-      content: `Product yearly leaderboard for ${loaderData?.year}`,
+      title: `The best products of ${date.toLocaleString({ year: 'numeric' })} | wemake`,
     },
   ];
 };

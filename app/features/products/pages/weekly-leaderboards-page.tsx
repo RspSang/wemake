@@ -39,14 +39,20 @@ export function action({ request }: Route.ActionArgs) {
   return {};
 }
 
-export const meta: Route.MetaFunction = ({ loaderData }) => {
+export const meta: Route.MetaFunction = ({ params }) => {
+  const date = DateTime.fromObject({
+    weekYear: Number(params.year),
+    weekNumber: Number(params.week),
+  })
+    .setZone('Asia/Seoul')
+    .setLocale('ko-KR');
   return [
     {
-      title: `Weekly Leaderboard ${loaderData?.year} W${loaderData?.week} | wemake`,
-    },
-    {
-      name: 'description',
-      content: `Product weekly leaderboard for ${loaderData?.year} week ${loaderData?.week}`,
+      title: `Best of week ${date
+        .startOf('week')
+        .toLocaleString(DateTime.DATE_SHORT)} - ${date
+        .endOf('week')
+        .toLocaleString(DateTime.DATE_SHORT)} | wemake`,
     },
   ];
 };

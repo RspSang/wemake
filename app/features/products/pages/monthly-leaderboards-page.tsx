@@ -39,14 +39,16 @@ export function action({ request }: Route.ActionArgs) {
   return {};
 }
 
-export const meta: Route.MetaFunction = ({ loaderData }) => {
+export const meta: Route.MetaFunction = ({ params }) => {
+  const date = DateTime.fromObject({
+    year: Number(params.year),
+    month: Number(params.month),
+  })
+    .setZone('Asia/Seoul')
+    .setLocale('ko-KR');
   return [
     {
-      title: `Monthly Leaderboard ${loaderData?.year}/${loaderData?.month} | wemake`,
-    },
-    {
-      name: 'description',
-      content: `Product monthly leaderboard for ${loaderData?.year}/${loaderData?.month}`,
+      title: `The best products of ${date.toLocaleString({ month: 'long', year: 'numeric' })} | wemake`,
     },
   ];
 };

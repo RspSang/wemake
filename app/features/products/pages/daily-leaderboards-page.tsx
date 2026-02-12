@@ -40,14 +40,17 @@ export function action({ request }: Route.ActionArgs) {
   return {};
 }
 
-export const meta: Route.MetaFunction = ({ loaderData }) => {
+export const meta: Route.MetaFunction = ({ params }) => {
+  const date = DateTime.fromObject({
+    year: Number(params.year),
+    month: Number(params.month),
+    day: Number(params.day),
+  })
+    .setZone('Asia/Seoul')
+    .setLocale('ko-KR');
   return [
     {
-      title: `Daily Leaderboard ${loaderData?.year}/${loaderData?.month}/${loaderData?.day} | wemake`,
-    },
-    {
-      name: 'description',
-      content: `Product daily leaderboard for ${loaderData?.year}/${loaderData?.month}/${loaderData?.day}`,
+      title: `The best products of ${date.toLocaleString(DateTime.DATE_MED)} | wemake`,
     },
   ];
 };
