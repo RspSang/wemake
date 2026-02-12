@@ -1,6 +1,7 @@
 import {
   type RouteConfig,
   index,
+  layout,
   prefix,
   route,
 } from '@react-router/dev/routes';
@@ -39,5 +40,18 @@ export default [
     route('/search', 'features/products/pages/search-page.tsx'),
     route('/submit', 'features/products/pages/submit-page.tsx'),
     route('/promote', 'features/products/pages/promote-page.tsx'),
+    ...prefix('/:productId', [
+      index('features/products/pages/product-redirect-page.tsx'),
+      layout('features/products/layouts/product-overview-layout.tsx', [
+        route('/overview', 'features/products/pages/product-overview-page.tsx'),
+        ...prefix('/reviews', [
+          index('features/products/pages/product-reviews-page.tsx'),
+        ]),
+      ]),
+    ]),
+  ]),
+  ...prefix('/ideas', [
+    index('features/ideas/pages/ideas-page.tsx'),
+    route('/:ideaId', 'features/ideas/pages/idea-page.tsx'),
   ]),
 ] satisfies RouteConfig;
