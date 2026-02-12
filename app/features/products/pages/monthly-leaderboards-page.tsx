@@ -26,7 +26,7 @@ export function loader({ params }: Route.LoaderArgs) {
     throw data(LEADERBOARD_ERRORS.INVALID_DATE, { status: 400 });
   }
 
-  if (!validateNotFutureDate(date.endOf('month'))) {
+  if (!validateNotFutureDate(date.startOf('month'))) {
     throw data(LEADERBOARD_ERRORS.FUTURE_DATE, { status: 400 });
   }
 

@@ -85,14 +85,14 @@ export default function WeeklyLeaderboardsPage({
   return (
     <div className="space-y-10">
       <Hero
-        title={`The best products of ${urlDate.startOf('week').toLocaleString(DateTime.DATE_SHORT)} - ${urlDate.endOf('week').toLocaleString(DateTime.DATE_SHORT)}`}
+        title={`The best products of ${urlDate.startOf('week').toLocaleString(DateTime.DATE_MED)} - ${urlDate.endOf('week').toLocaleString(DateTime.DATE_MED)}`}
       />
       <div className="flex items-center justify-center gap-2">
         <Button variant="secondary" asChild>
           <Link
             to={`/products/leaderboards/weekly/${previousWeek.weekYear}/${previousWeek.weekNumber}`}
           >
-            &larr; {previousWeek.toLocaleString(DateTime.DATE_SHORT)}
+            &larr; {previousWeek.toLocaleString(DateTime.DATE_MED)}
           </Link>
         </Button>
         {!isCurrentWeek && (
@@ -100,7 +100,7 @@ export default function WeeklyLeaderboardsPage({
             <Link
               to={`/products/leaderboards/weekly/${nextWeek.weekYear}/${nextWeek.weekNumber}`}
             >
-              {nextWeek.toLocaleString(DateTime.DATE_SHORT)} &rarr;
+              {nextWeek.toLocaleString(DateTime.DATE_MED)} &rarr;
             </Link>
           </Button>
         )}

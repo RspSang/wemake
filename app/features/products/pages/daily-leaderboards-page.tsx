@@ -95,7 +95,7 @@ export default function DailyLeaderboardsPage({
           <Link
             to={`/products/leaderboards/daily/${previousDay.year}/${previousDay.month}/${previousDay.day}`}
           >
-            &larr; {previousDay.toLocaleString(DateTime.DATE_SHORT)}
+            &larr; {previousDay.toLocaleString(DateTime.DATE_MED)}
           </Link>
         </Button>
         {!isToday && (
@@ -103,7 +103,7 @@ export default function DailyLeaderboardsPage({
             <Link
               to={`/products/leaderboards/daily/${nextDay.year}/${nextDay.month}/${nextDay.day}`}
             >
-              {nextDay.toLocaleString(DateTime.DATE_SHORT)} &rarr;
+              {nextDay.toLocaleString(DateTime.DATE_MED)} &rarr;
             </Link>
           </Button>
         )}

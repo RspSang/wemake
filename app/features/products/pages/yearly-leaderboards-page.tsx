@@ -1,9 +1,10 @@
 import { DateTime } from 'luxon';
-import type { Route } from './+types/yearly-leaderboards-page';
 import { data, isRouteErrorResponse, Link } from 'react-router';
+import type { Route } from './+types/yearly-leaderboards-page';
 import { ProductCard } from '../components/product-card';
 import {
   yearlyParamsSchema,
+  validateNotFutureDate,
   LEADERBOARD_ERRORS,
 } from '../schemas/leaderboard-params';
 import { Hero } from '~/common/components/hero';
@@ -16,8 +17,15 @@ export function loader({ params }: Route.LoaderArgs) {
     throw data(LEADERBOARD_ERRORS.INVALID_PARAMS, { status: 400 });
   }
 
-  const today = DateTime.now();
-  if (parsedData.year > today.year) {
+  const date = DateTime.fromObject({
+    year: parsedData.year,
+  });
+
+  if (!date.isValid) {
+    throw data(LEADERBOARD_ERRORS.INVALID_DATE, { status: 400 });
+  }
+
+  if (!validateNotFutureDate(date.startOf('year'))) {
     throw data(LEADERBOARD_ERRORS.FUTURE_DATE, { status: 400 });
   }
 
@@ -65,24 +73,30 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 export default function YearlyLeaderboardsPage({
   loaderData,
 }: Route.ComponentProps) {
-  const currentYear = DateTime.now().year;
-  const previousYear = loaderData.year - 1;
-  const nextYear = loaderData.year + 1;
-  const isCurrentYear = loaderData.year === currentYear;
+  const urlDate = DateTime.fromObject({
+    year: loaderData.year,
+  });
+  const previousYear = urlDate.minus({ years: 1 });
+  const nextYear = urlDate.plus({ years: 1 });
+  const isCurrentYear = urlDate.hasSame(DateTime.now(), 'year');
 
   return (
     <div className="space-y-10">
-      <Hero title={`The best products of ${loaderData.year}`} />
+      <Hero
+        title={`The best products of ${urlDate.toLocaleString({
+          year: 'numeric',
+        })}`}
+      />
       <div className="flex items-center justify-center gap-2">
         <Button variant="secondary" asChild>
-          <Link to={`/products/leaderboards/yearly/${previousYear}`}>
-            &larr; {previousYear}
+          <Link to={`/products/leaderboards/yearly/${previousYear.year}`}>
+            &larr; {previousYear.toLocaleString({ year: 'numeric' })}
           </Link>
         </Button>
         {!isCurrentYear && (
           <Button variant="secondary" asChild>
-            <Link to={`/products/leaderboards/yearly/${nextYear}`}>
-              {nextYear} &rarr;
+            <Link to={`/products/leaderboards/yearly/${nextYear.year}`}>
+              {nextYear.toLocaleString({ year: 'numeric' })} &rarr;
             </Link>
           </Button>
         )}
