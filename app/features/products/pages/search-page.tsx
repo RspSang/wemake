@@ -29,7 +29,7 @@ export function loader({ request }: Route.LoaderArgs) {
   }
 }
 
-export default function SearchPage({ loaderData }: Route.ComponentProps) {
+export default function SearchPage({}: Route.ComponentProps) {
   return (
     <div className="space-y-10">
       <Hero
