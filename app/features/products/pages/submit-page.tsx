@@ -1,27 +1,77 @@
+import { Hero } from '~/common/components/hero';
 import type { Route } from './+types/submit-page';
-
-export function loader({ request }: Route.LoaderArgs) {
-  return {};
-}
-
-export function action({ request }: Route.ActionArgs) {
-  return {};
-}
+import { Form } from 'react-router';
+import InputPair from '~/common/components/input-pair';
+import SelectPair from '~/common/components/select-pair';
 
 export const meta: Route.MetaFunction = () => {
   return [
     { title: 'Submit Product | wemake' },
-    { name: 'description', content: 'Submit your product to wemake' },
+    { name: 'description', content: 'Submit your product' },
   ];
 };
 
-export default function SubmitPage({ loaderData }: Route.ComponentProps) {
+export default function SubmitPage({}: Route.ComponentProps) {
   return (
-    <div className="px-20 py-10">
-      <h1 className="text-4xl font-bold tracking-tight">Submit Product</h1>
-      <p className="mt-2 text-muted-foreground">
-        Share your product with the community.
-      </p>
+    <div>
+      <Hero
+        title="Submit Your Product"
+        subtitle="Share your product with the world"
+      />
+      <Form className="grid grid-cols-2 gap-10 max-w-5xl mx-auto">
+        <div className="space-y-5">
+          <InputPair
+            label="Name"
+            description="This is the name of your product"
+            id="name"
+            name="name"
+            type="text"
+            required
+            placeholder="Name of your product"
+          />
+          <InputPair
+            label="Tagline"
+            description="60 characters or less"
+            id="tagline"
+            name="tagline"
+            required
+            type="text"
+            placeholder="A concise description of your product"
+          />
+          <InputPair
+            label="URL"
+            description="The URL of your product"
+            id="url"
+            name="url"
+            required
+            type="url"
+            placeholder="https://example.com"
+          />
+          <InputPair
+            textArea
+            label="Description"
+            description="A detailed description of your product"
+            id="description"
+            name="description"
+            required
+            type="text"
+            placeholder="A detailed description of your product"
+          />
+          <SelectPair
+            label="Category"
+            description="The category of your product"
+            name="category"
+            required
+            placeholder="Select a category"
+            options={[
+              { label: 'AI', value: 'ai' },
+              { label: 'Design', value: 'design' },
+              { label: 'Marketing', value: 'marketing' },
+              { label: 'Development', value: 'development' },
+            ]}
+          />
+        </div>
+      </Form>
     </div>
   );
 }
