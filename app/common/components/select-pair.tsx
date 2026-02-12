@@ -28,7 +28,7 @@ export default function SelectPair({
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
-    <div className="space-y-2 flex flex-col">
+    <div className="space-y-2 flex flex-col w-full">
       <Label
         className="flex flex-col gap-1 items-start"
         onClick={() => setIsOpen(true)}
