@@ -8,6 +8,13 @@
       "when": 1771316105615,
       "tag": "0000_flippant_true_believers",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1771317960154,
+      "tag": "0001_youthful_silverclaw",
+      "breakpoints": true
     }
   ]
 }
