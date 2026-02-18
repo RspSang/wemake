@@ -36,6 +36,13 @@
       "when": 1771397298382,
       "tag": "0004_unusual_bushwacker",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1771398406660,
+      "tag": "0005_productive_scalphunter",
+      "breakpoints": true
     }
   ]
 }
