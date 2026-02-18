@@ -15,6 +15,13 @@
       "when": 1771317960154,
       "tag": "0001_youthful_silverclaw",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771395983793,
+      "tag": "0002_purple_storm",
+      "breakpoints": true
     }
   ]
 }
