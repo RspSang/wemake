@@ -45,6 +45,7 @@ import client from '~/supa-client';
 
 // // supabase-client
 export const getTopics = async () => {
+  await new Promise(resolve => setTimeout(resolve, 3000));
   const { data, error } = await client.from('topics').select('name, slug');
   if (error) throw new Error(error.message);
   return data;
@@ -52,7 +53,7 @@ export const getTopics = async () => {
 
 // export const getPosts = async () => {
 //   const { data, error } = await client.from('posts').select(
-//     `post_id, 
+//     `post_id,
 //      title,
 //      created_at,
 //      topic:topics!inner(name),
@@ -63,10 +64,12 @@ export const getTopics = async () => {
 //   return data;
 // };
 
-
 // Supabase Views
 export const getPosts = async () => {
-  const { data, error } = await client.from('community_post_list_view').select('*');
+  await new Promise(resolve => setTimeout(resolve, 3000));
+  const { data, error } = await client
+    .from('community_post_list_view')
+    .select('*');
   if (error) throw new Error(error.message);
   return data;
 };
