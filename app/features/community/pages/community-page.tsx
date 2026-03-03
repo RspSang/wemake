@@ -22,9 +22,9 @@ export const meta: Route.MetaFunction = () => {
 export const loader = async () => {
   // const topics = await getTopics();
   // const posts = await getPosts();
-  // const [topics, posts] = await Promise.all([getTopics(), getPosts()]);
-  const topics = getTopics();
-  const posts = getPosts();
+  const [topics, posts] = await Promise.all([getTopics(), getPosts()]);
+  // const topics = getTopics();
+  // const posts = getPosts();
   return { topics, posts };
 };
 
@@ -103,52 +103,38 @@ export default function CommunityPage({ loaderData }: Route.ComponentProps) {
               <Link to={`/community/submit`}>Create Discussion</Link>
             </Button>
           </div>
-          <Suspense fallback={<div>Loading posts...</div>}>
-            <Await resolve={posts}>
-              {posts => (
-                <div className="space-y-5">
-                  {posts.map(post => (
-                    <PostCard
-                      key={post.post_id}
-                      id={post.post_id}
-                      title={post.title}
-                      author={post.author}
-                      authorAvatarUrl={post.author_avatar}
-                      category={post.topic}
-                      postedAt={post.created_at}
-                      votesCount={post.upvotes}
-                      expanded
-                    />
-                  ))}
-                </div>
-              )}
-            </Await>
-          </Suspense>
+          <div className="space-y-5">
+            {posts.map(post => (
+              <PostCard
+                key={post.post_id}
+                id={post.post_id}
+                title={post.title}
+                author={post.author}
+                authorAvatarUrl={post.author_avatar}
+                category={post.topic}
+                postedAt={post.created_at}
+                votesCount={post.upvotes}
+                expanded
+              />
+            ))}
+          </div>
         </div>
         <aside className="col-span-2 space-y-5">
           <span className="text-sm font-bold text-muted-foreground uppercase">
             Topics
           </span>
-          <Suspense fallback={<div>Loading topics...</div>}>
-            <Await resolve={topics}>
-              {topics => (
-                <div className="flex flex-col gap-2 items-start">
-                  {topics.map(topic => (
-                    <Button
-                      asChild
-                      variant={'link'}
-                      key={topic.slug}
-                      className="pl-0"
-                    >
-                      <Link to={`/community?topic=${topic.slug}`}>
-                        {topic.name}
-                      </Link>
-                    </Button>
-                  ))}
-                </div>
-              )}
-            </Await>
-          </Suspense>
+          <div className="flex flex-col gap-2 items-start">
+            {topics.map(topic => (
+              <Button
+                asChild
+                variant={'link'}
+                key={topic.slug}
+                className="pl-0"
+              >
+                <Link to={`/community?topic=${topic.slug}`}>{topic.name}</Link>
+              </Button>
+            ))}
+          </div>
         </aside>
       </div>
     </div>
