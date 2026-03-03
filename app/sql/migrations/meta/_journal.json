@@ -57,6 +57,13 @@
       "when": 1771916289244,
       "tag": "0007_absurd_manta",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1772513209616,
+      "tag": "0008_nasty_sharon_ventura",
+      "breakpoints": true
     }
   ]
 }
